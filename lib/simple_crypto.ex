@@ -76,7 +76,7 @@ defmodule SimpleCrypto do
       iex> SimpleCrypto.rand_str(32)
       "rvbAtDMdVPJu2J-QDyAxgOLAL0LQWL0w"
   """
-  @spec rand_str(non_neg_integer) :: binary
+  @spec rand_str(pos_integer) :: binary
   def rand_str(length) do
     :crypto.strong_rand_bytes(length) |> Base.url_encode64() |> binary_part(0, length)
   end
@@ -88,7 +88,7 @@ defmodule SimpleCrypto do
       iex> SimpleCrypto.rand_int_str(6)
       "811238"
   """
-  @spec rand_int_str(non_neg_integer) :: binary
+  @spec rand_int_str(pos_integer) :: binary
   def rand_int_str(num_of_digits) do
     len = :math.pow(10, num_of_digits) |> round()
 
@@ -104,7 +104,7 @@ defmodule SimpleCrypto do
       iex> SimpleCrypto.otp_rand_str(16)
       "UXGMUXNUANHONKZR"
   """
-  @spec otp_rand_str(non_neg_integer) :: binary
+  @spec otp_rand_str(pos_integer) :: binary
   def otp_rand_str(length \\ 16) do
     String.replace(String.replace(String.upcase(rand_str(length)), ~r([-_]), "N"), ~r(\d), "U")
   end
@@ -117,24 +117,20 @@ defmodule SimpleCrypto do
       iex> SimpleCrypto.id_rand_str(12)
       "SWm6fDWvd4id"
   """
-  @spec id_rand_str(non_neg_integer) :: binary
+  @spec id_rand_str(pos_integer) :: binary
   def id_rand_str(length) do
     String.replace(rand_str(length), ~r([-_]), "w")
   end
 
   @doc """
-  Pad the end of `str` using `char`, so that the total length is `length`.
+  Pad the end of `str` using `padding`, so that the total length is `length`.
 
   ## Examples
       iex> SimpleCrypto.pad("123", 8, ".")
       "123....."
   """
-  @spec pad(iodata, non_neg_integer, iodata) :: binary
-  def pad(str, length \\ 16, char \\ " ") do
-    # TODO: Use String.pad_trailing/2 instead?
-    case rem(length - rem(byte_size(str), length), length) do
-      0 -> str
-      n -> str <> String.duplicate(char, n)
-    end
+  @spec pad(iodata, pos_integer, iodata) :: binary
+  def pad(str, length \\ 16, padding \\ " ") do
+    String.pad_trailing(str, length, padding)
   end
 end
