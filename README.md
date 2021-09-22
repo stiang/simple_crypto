@@ -42,5 +42,6 @@ iex(8)> SimpleCrypto.id_rand_str(12)
 
 iex(9)> SimpleCrypto.pad("123", 8, ".")
 "123....."
+```
 
 Full documentation can be found at [https://hexdocs.pm/simple_crypto](https://hexdocs.pm/simple_crypto).
