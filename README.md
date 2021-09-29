@@ -9,7 +9,7 @@ in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:simple_crypto, "~> 1.0"}]
+  [{:simple_crypto, "~> 1.0.4"}]
 end
 ```
 
@@ -40,8 +40,9 @@ iex(7)> SimpleCrypto.otp_rand_str(16)
 iex(8)> SimpleCrypto.id_rand_str(12)
 "SWm6fDWvd4id"
 
-iex(9)> SimpleCrypto.pad("123", 8, ".")
-"123....."
+iex(9)> SimpleCrypto.pad_by_width("The length of this string is 76 before padding, 4 less than a multiple of 16", 16, ".")
+"The length of this string is 76 before padding, 4 less than a multiple of 16...."
+
 ```
 
 Full documentation can be found at [https://hexdocs.pm/simple_crypto](https://hexdocs.pm/simple_crypto).
