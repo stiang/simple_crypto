@@ -6,7 +6,7 @@ defmodule SimpleCrypto do
   @doc """
   Encrypts `str` using `key` as the encryption key.
 
-  ## Examples
+  ## Example
       iex> SimpleCrypto.encrypt("Hi there", "secret key")
       "qCgs4rfReY5nTX39uHwjww=="
   """
@@ -15,8 +15,8 @@ defmodule SimpleCrypto do
     Base.encode64(
       :crypto.crypto_one_time(
         :aes_ecb,
-        String.slice(pad(key), 0, 32),
-        pad(Integer.to_string(byte_size(str)) <> "|" <> str),
+        String.slice(pad_by_width(key), 0, 32),
+        pad_by_width(Integer.to_string(byte_size(str)) <> "|" <> str),
         true
       )
     )
@@ -25,7 +25,7 @@ defmodule SimpleCrypto do
   @doc """
   Decrypts `str` using `key` as the decryption key.
 
-  ## Examples
+  ## Example
       iex> SimpleCrypto.decrypt("qCgs4rfReY5nTX39uHwjww==", "secret key")
       "Hi there"
   """
@@ -34,21 +34,24 @@ defmodule SimpleCrypto do
     decrypted =
       :crypto.crypto_one_time(
         :aes_ecb,
-        String.slice(pad(key), 0, 32),
-        pad(elem(Base.decode64(str), 1)),
+        String.slice(pad_by_width(key), 0, 32),
+        pad_by_width(elem(Base.decode64(str), 1)),
         false
       )
 
     case Regex.run(~r/(\d+)\|/, decrypted) do
-      nil -> decrypted
-      [match, len] -> Kernel.binary_part(decrypted, byte_size(match), String.to_integer(len))
+      nil ->
+        decrypted
+
+      [match, len] ->
+        Kernel.binary_part(decrypted, byte_size(match), String.to_integer(len))
     end
   end
 
   @doc """
   Hashes `str` using the SHA256 algorithm.
 
-  ## Examples
+  ## Example
       iex> SimpleCrypto.sha256("Turn me into SHA256")
       "87A3AABED406EFBCD4956E2E32E75948DB88E7ED35CACD4D8B66669EA849C102"
   """
@@ -60,7 +63,7 @@ defmodule SimpleCrypto do
   @doc """
   Use `key` to generate a hash value of `str` using the HMAC method.
 
-  ## Examples
+  ## Example
       iex> SimpleCrypto.hmac("HMAC me now!", "secret key")
       "E7235176D81E29EC202B117324C7B3A2A6180F2A2A163D79E5A6BB58E7A61A7B"
   """
@@ -72,7 +75,7 @@ defmodule SimpleCrypto do
   @doc """
   Generate a random string of `length` length.
 
-  ## Examples
+  ## Example
       iex> SimpleCrypto.rand_str(32)
       "rvbAtDMdVPJu2J-QDyAxgOLAL0LQWL0w"
   """
@@ -84,7 +87,7 @@ defmodule SimpleCrypto do
   @doc """
   Generate a random string of `length` length, consisting only of integers.
 
-  ## Examples
+  ## Example
       iex> SimpleCrypto.rand_int_str(6)
       "811238"
   """
@@ -98,9 +101,9 @@ defmodule SimpleCrypto do
   end
 
   @doc """
-  Generate a random string of `length` length that is suitable to use as OTP codes.
+  Generate a random string of `length` length that is suitable to use as an OTP (One-time pad) code.
 
-  ## Examples
+  ## Example
       iex> SimpleCrypto.otp_rand_str(16)
       "UXGMUXNUANHONKZR"
   """
@@ -113,7 +116,7 @@ defmodule SimpleCrypto do
   Generate a random string of `length` length that is suitable to use as an 
   easily copy/pastable ID (no hyphens or other problematic characters).
 
-  ## Examples
+  ## Example
       iex> SimpleCrypto.id_rand_str(12)
       "SWm6fDWvd4id"
   """
@@ -123,14 +126,27 @@ defmodule SimpleCrypto do
   end
 
   @doc """
-  Pad the end of `str` using `padding`, so that the total length is `length`.
+  Pad the end of `str` using `padding`, so that the total length is always a multiple of `width`.
 
-  ## Examples
-      iex> SimpleCrypto.pad("123", 8, ".")
-      "123....."
+  ## Example
+      iex> SimpleCrypto.pad_by_width("The length of this string is 76 before padding, 4 less than a multiple of 16", 16, ".")
+      "The length of this string is 76 before padding, 4 less than a multiple of 16...."
+  """
+  @spec pad_by_width(iodata, pos_integer, iodata) :: binary
+  def pad_by_width(str, width \\ 16, padding \\ " ") do
+    str_len = byte_size(str)
+
+    case rem(str_len, width) do
+      0 -> str
+      remainder -> String.pad_trailing(str, str_len - remainder + width, padding)
+    end
+  end
+
+  @doc """
+  DEPRECATED: Use pad_by_width/3 instead.
   """
   @spec pad(iodata, pos_integer, iodata) :: binary
-  def pad(str, length \\ 16, padding \\ " ") do
-    String.pad_trailing(str, length, padding)
+  def pad(str, width \\ 16, padding \\ " ") do
+    pad_by_width(str, width, padding)
   end
 end
