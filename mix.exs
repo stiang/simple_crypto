@@ -2,7 +2,7 @@ defmodule SimpleCrypto.Mixfile do
   use Mix.Project
 
   @source_url "https://github.com/stiang/simple_crypto"
-  @version "1.0.5"
+  @version "1.0.7"
 
   def project do
     [

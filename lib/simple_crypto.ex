@@ -62,6 +62,19 @@ defmodule SimpleCrypto do
   end
 
   @doc """
+  Use `key` to generate a hash value of `str` using the HMAC method, then encode it as base64
+
+  ## Example
+      iex> SimpleCrypto.hmac_base64("HMAC me now!", "secret key")
+      "E7235176D81E29EC202B117324C7B3A2A6180F2A2A163D79E5A6BB58E7A61A7B"
+  """
+  @spec hmac_base64(iodata, iodata) :: binary
+  def hmac_base64(str, key) do
+    hmac_fun(key, str)
+    |> Base.encode64()
+  end
+
+  @doc """
   Generate a random string of `length` length.
 
   ## Example

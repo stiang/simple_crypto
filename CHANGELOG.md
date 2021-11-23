@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.7 (2021-11-23)
+
+* Added `hmac_base64/2`
+
+## 1.0.6 (2021-11-23)
+
+* Fixed Elixir version required
+
 ## 1.0.5 (2021-11-23)
 
 * Dynamically use the correct function from OTP, so we can support older versions of Elixir/OTP as well
