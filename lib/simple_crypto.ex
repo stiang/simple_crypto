@@ -12,14 +12,8 @@ defmodule SimpleCrypto do
   """
   @spec encrypt(iodata, iodata) :: binary
   def encrypt(str, key) do
-    Base.encode64(
-      :crypto.crypto_one_time(
-        :aes_ecb,
-        String.slice(pad_by_width(key), 0, 32),
-        pad_by_width(Integer.to_string(byte_size(str)) <> "|" <> str),
-        true
-      )
-    )
+    encrypt_fun(key, str)
+    |> Base.encode64()
   end
 
   @doc """
@@ -31,13 +25,7 @@ defmodule SimpleCrypto do
   """
   @spec decrypt(iodata, iodata) :: binary
   def decrypt(str, key) do
-    decrypted =
-      :crypto.crypto_one_time(
-        :aes_ecb,
-        String.slice(pad_by_width(key), 0, 32),
-        pad_by_width(elem(Base.decode64(str), 1)),
-        false
-      )
+    decrypted = decrypt_fun(key, str)
 
     case Regex.run(~r/(\d+)\|/, decrypted) do
       nil ->
@@ -69,7 +57,8 @@ defmodule SimpleCrypto do
   """
   @spec hmac(iodata, iodata) :: binary
   def hmac(str, key) do
-    :crypto.mac(:hmac, :sha256, key, str) |> Base.encode16()
+    hmac_fun(key, str)
+    |> Base.encode16()
   end
 
   @doc """
@@ -126,7 +115,7 @@ defmodule SimpleCrypto do
   end
 
   @doc """
-  Pad the end of `str` using `padding`, so that the total length is always a multiple of `width`.
+  Pad the end of `str` using `padding`, so that the total length becomes a multiple of `width`.
 
   ## Example
       iex> SimpleCrypto.pad_by_width("The length of this string is 76 before padding, 4 less than a multiple of 16", 16, ".")
@@ -148,5 +137,49 @@ defmodule SimpleCrypto do
   @spec pad(iodata, pos_integer, iodata) :: binary
   def pad(str, width \\ 16, padding \\ " ") do
     pad_by_width(str, width, padding)
+  end
+
+  if Code.ensure_loaded?(:crypto) and function_exported?(:crypto, :mac, 4) do
+    defp hmac_fun(key, str) do
+      :crypto.mac(:hmac, :sha256, key, str)
+    end
+
+    defp encrypt_fun(key, str) do
+      :crypto.crypto_one_time(
+        :aes_ecb,
+        String.slice(pad_by_width(key), 0, 32),
+        pad_by_width(Integer.to_string(byte_size(str)) <> "|" <> str),
+        true
+      )
+    end
+
+    defp decrypt_fun(key, str) do
+      :crypto.crypto_one_time(
+        :aes_ecb,
+        String.slice(pad_by_width(key), 0, 32),
+        pad_by_width(elem(Base.decode64(str), 1)),
+        false
+      )
+    end
+  else
+    defp hmac_fun(key, str) do
+      :crypto.hmac(:sha256, key, str)
+    end
+
+    defp encrypt_fun(key, str) do
+      :crypto.block_encrypt(
+        :aes_ecb,
+        String.slice(pad(key), 0, 32),
+        pad(Integer.to_string(byte_size(str)) <> "|" <> str)
+      )
+    end
+
+    defp decrypt_fun(key, str) do
+      :crypto.block_decrypt(
+        :aes_ecb,
+        String.slice(pad(key), 0, 32),
+        pad(elem(Base.decode64(str), 1))
+      )
+    end
   end
 end
