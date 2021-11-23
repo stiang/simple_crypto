@@ -8,7 +8,7 @@ defmodule SimpleCrypto.Mixfile do
     [
       app: :simple_crypto,
       version: @version,
-      elixir: "~> 1.12",
+      elixir: "~> 1.0",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       preferred_cli_env: [docs: :docs],
