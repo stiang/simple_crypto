@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.8 (2021-12-13)
+
+* Added `sha256_base64/1`
+
 ## 1.0.7 (2021-11-23)
 
 * Added `hmac_base64/2`

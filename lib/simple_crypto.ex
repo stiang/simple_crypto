@@ -49,6 +49,18 @@ defmodule SimpleCrypto do
   end
 
   @doc """
+  Hashes `str` using the SHA256 algorithm, then base64-encodes it.
+
+  ## Example
+      iex> SimpleCrypto.sha256_base64("Turn me into base64-encoded SHA256")
+      "/UWKWh0NJFgCf3mWSIJiDuJA9HCY94T2l/XJ+CyreAM="
+  """
+  @spec sha256_base64(iodata) :: binary
+  def sha256_base64(str) do
+    :crypto.hash(:sha256, str) |> Base.encode64()
+  end
+
+  @doc """
   Use `key` to generate a hash value of `str` using the HMAC method.
 
   ## Example
@@ -62,11 +74,11 @@ defmodule SimpleCrypto do
   end
 
   @doc """
-  Use `key` to generate a hash value of `str` using the HMAC method, then encode it as base64
+  Use `key` to generate a base64-encoded hash value of `str` using the HMAC method
 
   ## Example
-      iex> SimpleCrypto.hmac_base64("HMAC me now!", "secret key")
-      "E7235176D81E29EC202B117324C7B3A2A6180F2A2A163D79E5A6BB58E7A61A7B"
+      iex> SimpleCrypto.hmac_base64("HMAC and base64 me now!", "secret key")
+      "Xqsja2bp+jfleCkl4bRFZoyljM2RL0DC4PNBkTtKXrk="
   """
   @spec hmac_base64(iodata, iodata) :: binary
   def hmac_base64(str, key) do
