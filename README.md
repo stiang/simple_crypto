@@ -1,6 +1,6 @@
 # SimpleCrypto
 
-Simple crypto helpers for Elixir. Requires Elixir 1.12 since it uses the new crypto API in OTP22.
+Simple crypto helpers for Elixir. Supports both the old and the new `:crypto` API (from OTP22).
 
 ## Installation
 
@@ -9,7 +9,7 @@ in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:simple_crypto, "~> 1.0.4"}]
+  [{:simple_crypto, "~> 1.0.8"}]
 end
 ```
 
@@ -25,8 +25,14 @@ iex(2)> SimpleCrypto.decrypt("qCgs4rfReY5nTX39uHwjww==", "secret key")
 iex(3)> SimpleCrypto.sha256("Turn me into SHA256")
 "87A3AABED406EFBCD4956E2E32E75948DB88E7ED35CACD4D8B66669EA849C102"
 
+iex> SimpleCrypto.sha256_base64("Turn me into base64-encoded SHA256")
+"/UWKWh0NJFgCf3mWSIJiDuJA9HCY94T2l/XJ+CyreAM="
+
 iex(4)> SimpleCrypto.hmac("HMAC me now!", "secret key")
 "E7235176D81E29EC202B117324C7B3A2A6180F2A2A163D79E5A6BB58E7A61A7B"
+
+iex> SimpleCrypto.hmac_base64("HMAC and base64 me now!", "secret key")
+"Xqsja2bp+jfleCkl4bRFZoyljM2RL0DC4PNBkTtKXrk="
 
 iex(5)> SimpleCrypto.rand_str(32)
 "rvbAtDMdVPJu2J-QDyAxgOLAL0LQWL0w"
