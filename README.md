@@ -9,7 +9,7 @@ in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:simple_crypto, "~> 1.0.8"}]
+  [{:simple_crypto, "~> 1.0.9"}]
 end
 ```
 
