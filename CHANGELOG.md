@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.9 (2022-02-25)
+
+* No code changes, just needed to push a new version to force HexDocs to generate a new README
+
 ## 1.0.8 (2021-12-13)
 
 * Added `sha256_base64/1`
